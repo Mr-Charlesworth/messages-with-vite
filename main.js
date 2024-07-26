@@ -1,4 +1,5 @@
 import './style.css'
+import axios from 'axios'
 
 document.querySelector('#app').innerHTML = `
     <h1>Messages</h1>
@@ -23,24 +24,21 @@ const updateMessages = (messages) => {
   messageList.innerHTML = html;
 }
 
-const getMessages = () => fetch('http://localhost:3001/api/messages')
-  .then((response) => response.json())
-  .then((data) => updateMessages(data))
+const getMessages = () => axios.get('http://localhost:3001/api/messages')
+  .then(({ data }) => updateMessages(data))
 
 const form = document.getElementById('message-form');
 
 form.onsubmit = (e) => {
   e.preventDefault();
-  fetch(new Request('http://localhost:3001/api/messages', {
+  axios({
     method: 'POST',
-    body: JSON.stringify({
+    url: 'http://localhost:3001/api/messages',
+    data: {
       from: form.elements["from"].value,
       message: form.elements["message"].value
-    }),
-    headers: {
-      'Content-Type': "application/json"
     },
-  })).then(() => getMessages())
+  }).then(() => getMessages())
 };
 
 getMessages();
